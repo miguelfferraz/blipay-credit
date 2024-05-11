@@ -4,6 +4,8 @@ import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
 
+from src.creditscore import CreditScoreCalculator
+
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def _validate_params(self, params: dict, mandatory: list[tuple]) -> bool:
@@ -23,7 +25,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
 
-                msg = f"400 Bad Request, missing parameter: {param}"
+                msg = f"Missing parameter: {param}"
                 self.wfile.write(bytes(msg, "utf8"))
 
                 return False
@@ -36,7 +38,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                     self.send_header("Content-type", "text/html")
                     self.end_headers()
 
-                    msg = f"400 Bad Request, invalid parameter type: {param}"
+                    msg = f"Invalid parameter type: {param}"
                     self.wfile.write(bytes(msg, "utf8"))
 
                     return False
@@ -55,8 +57,26 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             ]
 
             if self._validate_params(query_params, mandatory_params):
-                # TODO: Implement the score calculation
-                pass
+                calculator = CreditScoreCalculator(
+                    name=query_params["name"][0],
+                    age=int(query_params["age"][0]),
+                    income=int(query_params["income"][0]),
+                    city=query_params["city"][0],
+                )
+
+                try:
+                    _, msg = calculator.has_approved_credit()
+                except Exception as e:
+                    self.send_response(500)
+                    self.send_header("Content-type", "text/html")
+                    self.end_headers()
+                    self.wfile.write(bytes(str(e), "utf8"))
+                    return
+
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(bytes(msg, "utf8"))
             else:
                 return
 
