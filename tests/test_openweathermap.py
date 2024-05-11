@@ -55,10 +55,24 @@ def test_get_temperature():
     )
     client._get_weather_data = mock_get_weather_data
 
-    temperature = client.get_temperature(city=city)
+    temperature = client.get_temperature(city=city, celsius=False)
 
     assert temperature == expected_temperature
     mock_get_weather_data.assert_called_once_with(city=city)
+
+
+    # Successfull response in Celsius
+    mock_get_weather_data = MagicMock(
+        return_value={"main": {"temp": expected_temperature}}
+    )
+    client._get_weather_data = mock_get_weather_data
+
+    temperature = client.get_temperature(city=city, celsius=True)
+    celsius_expected_temperature = expected_temperature - 273.15
+
+    assert temperature == celsius_expected_temperature
+    mock_get_weather_data.assert_called_once_with(city=city)
+
 
     # Failed response
     city = "Unknown"

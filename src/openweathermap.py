@@ -34,15 +34,16 @@ class OpenWeatherMapClient:
 
         return res.json()
 
-    def get_temperature(self, city: str) -> float:
+    def get_temperature(self, city: str, celsius: bool = True) -> float:
         """
         Get the temperature of a city
 
         Args:
             city (str): City name (case-insensitive)
+            celsius (bool): True if temperature should be in Celsius, False if in Kelvin
 
         Returns:
-            float: Temperature in Kelvin
+            float: Temperature
 
         Raises:
             Exception: If failed to get temperature
@@ -50,6 +51,11 @@ class OpenWeatherMapClient:
         try:
             weather_data = self._get_weather_data(city=city)
 
-            return weather_data["main"]["temp"]
+            temp = weather_data["main"]["temp"]
+
+            if celsius:
+                return temp - 273.15
+            else:
+                return temp
         except Exception:
             raise
