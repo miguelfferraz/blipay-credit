@@ -1,19 +1,21 @@
 """Module for the HTTP server"""
 
+import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
+
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def _validate_params(self, params: dict, mandatory: list[tuple]) -> bool:
         """
         Validate if all mandatory parameters are provided and have the correct type.
-        
+
         Args:
             params (dict): Query parameters
             mandatory (list[tuple]): List of tuples with the parameter and type
 
         Returns:
-            bool: True if all parameters are valid, False otherwise            
+            bool: True if all parameters are valid, False otherwise
         """
         for param, param_type in mandatory:
             if param not in params:
@@ -40,7 +42,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                     return False
         return True
 
-
     def do_GET(self):  # noqa N802
         parsed_url = urlparse(self.path)
 
@@ -65,12 +66,17 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"404 Not Found")
 
+
 def run(port=8080):
     http_server = HTTPServer(("", port), HTTPRequestHandler)
-    
+
     print(f"Server started on port {port}")  # noqa T201
     http_server.serve_forever()
 
 
 if __name__ == "__main__":
-    run()
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--port", type=int, default=8080)
+
+    args = argparser.parse_args()
+    run(args.port)
