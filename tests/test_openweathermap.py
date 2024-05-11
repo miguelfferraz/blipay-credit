@@ -5,11 +5,12 @@ from src.openweathermap import OpenWeatherMapClient
 BASE_URL = "http://test.com"
 API_KEY = "test"
 
+
 def test_get_weather_data():
     client = OpenWeatherMapClient(base_url=BASE_URL, api_key=API_KEY)
 
     mock_requests = MagicMock()
-    
+
     with patch("src.openweathermap.requests", mock_requests):
         # Successfull response
         city = "Campinas"
@@ -25,7 +26,9 @@ def test_get_weather_data():
 
         assert data == expected_weather_data
         mock_requests.get.assert_called_once_with(
-            url="http://test.com/weather", params={"q": city, "appid": "test"}, timeout=10
+            url="http://test.com/weather",
+            params={"q": city, "appid": "test"},
+            timeout=10,
         )
 
         # Failed response
@@ -39,6 +42,7 @@ def test_get_weather_data():
         except Exception as e:
             assert str(e) == f"Failed to get weather data: Failed"
 
+
 def test_get_temperature():
     client = OpenWeatherMapClient(base_url=BASE_URL, api_key=API_KEY)
 
@@ -46,7 +50,9 @@ def test_get_temperature():
     city = "Campinas"
     expected_temperature = 123.45
 
-    mock_get_weather_data = MagicMock(return_value={"main": {"temp": expected_temperature}})
+    mock_get_weather_data = MagicMock(
+        return_value={"main": {"temp": expected_temperature}}
+    )
     client._get_weather_data = mock_get_weather_data
 
     temperature = client.get_temperature(city=city)
@@ -57,12 +63,14 @@ def test_get_temperature():
     # Failed response
     city = "Unknown"
 
-    mock_get_weather_data = MagicMock(side_effect=Exception("Failed to get weather data: Failed"))
+    mock_get_weather_data = MagicMock(
+        side_effect=Exception("Failed to get weather data: Failed")
+    )
     client._get_weather_data = mock_get_weather_data
 
     try:
         _ = client.get_temperature(city=city)
     except Exception as e:
         assert str(e) == "Failed to get weather data: Failed"
-        
+
     mock_get_weather_data.assert_called_once_with(city=city)
