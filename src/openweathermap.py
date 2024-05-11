@@ -26,10 +26,11 @@ class OpenWeatherMapClient:
         url = f"{self.base_url}/weather"
         query_params = {"q": city, "appid": self.api_key}
 
-        res = requests.get(url=url, params=query_params)
+        res = requests.get(url=url, params=query_params, timeout=10)
 
         if res.status_code != HTTPStatus.OK:
-            raise Exception(f"Failed to get weather data: {res.text}")
+            msg = f"Failed to get weather data: {res.text}"
+            raise Exception(msg)
 
         return res.json()
 

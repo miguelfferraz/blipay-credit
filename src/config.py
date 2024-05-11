@@ -8,5 +8,5 @@ from dotenv import load_dotenv
 class Config:
     load_dotenv()
 
-    OPEN_WEATHER_BASE_URL: str = os.getenv("OPEN_WEATHER_BASE_URL", "")
-    OPEN_WEATHER_API_KEY: str = os.getenv("OPEN_WEATHER_API_KEY", "")
+    OPEN_WEATHER_BASE_URL: str = str(os.getenv("OPEN_WEATHER_BASE_URL", ""))
+    OPEN_WEATHER_API_KEY: str = str(os.getenv("OPEN_WEATHER_API_KEY", ""))
