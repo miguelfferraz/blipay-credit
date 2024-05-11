@@ -72,9 +72,6 @@ use_parentheses = true
 [tool.mypy]
 ignore_missing_imports = true
 
-[tool.pytest.ini_options]
-asyncio_mode = "strict"
-
 [tool.ruff]
 exclude = [
     "tests",
