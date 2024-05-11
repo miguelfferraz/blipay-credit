@@ -1,0 +1,146 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "blipay-credit"
+dynamic = ["version"]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+   { name = "Miguel Figueira Ferraz", email = "miguelfigueiraferraz@gmail.com" },
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "python-dotenv==1.0.1",
+    "requests==2.31.0"
+]
+
+[project.urls]
+Source = "https://github.com/miguelfferraz/blipay-credit"
+Documentation = "https://github.com/miguelfferraz/blipay-credit#readme"
+
+[tool.hatch.version]
+path = "src/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+# Testing
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest==8.2.0",
+]
+
+[tool.hatch.envs.test.scripts]
+test = "pytest {args:.}"
+verb = "pytest -v {args:.}"
+
+# Linting
+[tool.hatch.envs.lint]
+detached = true
+dependencies = ["black>=23.11.0", "mypy>=1.10.0", "ruff>=0.1.6"]
+
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:src}"
+style = ["ruff  check {args:.}", "black --check --diff {args:.}"]
+fmt = ["black {args:.}", "ruff check --fix {args:.}", "isort {args:.}", "style"]
+all = ["style", "typing"]
+
+[tool.black]
+target-version = ["py310"]
+line-length = 88
+skip-string-normalization = true
+
+[tool.isort]
+include_trailing_comma = true
+multi_line_output = 3
+use_parentheses = true
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+
+[tool.ruff]
+exclude = [
+    "tests",
+    "docs",
+    "build",
+    "dist",
+    "env",
+    ".venv",
+    ".tox",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".hatch",
+]
+target-version = "py310"
+line-length = 88
+lint.select = [
+    "A",
+    "ARG",
+    "B",
+    "C",
+    "DTZ",
+    "E",
+    "EM",
+    "F",
+    "FBT",
+    "I",
+    "ICN",
+    "ISC",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "Q",
+    "RUF",
+    "S",
+    "T",
+    "TID",
+    "UP",
+    "W",
+    "YTT",
+]
+lint.ignore = [
+    # Allow function call in arguments default values, this is used by FastAPI Depends() 
+    "B008",
+    # Allow non-abstract empty methods in abstract base classes
+    "B027",
+    # Allow boolean positional values in function calls, like `dict.get(... True)`
+    "FBT003",
+    # Ignore checks for possible passwords
+    "S105",
+    "S106",
+    "S107",
+    # Ignore complexity
+    "C901",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    # Ignore: Unused `noqa` directive
+    "RUF100",
+]
+lint.unfixable = [
+    # Don't touch unused imports
+    "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = [
+    "classmethod",
+]
